@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-I learn cool things!
+I learn cool things! 
 
 ### More Information
 
