@@ -55,6 +55,7 @@ int main()
 }
 
 ```
+
 Output of the PE: 
 ```
 1
@@ -62,6 +63,7 @@ Output of the PE:
 Base
 Derived
 ```
+
   The size of both classes are 1 when no data or virtual functions are present. C++ guarantees that every object has a unique address, so the compiler allocates at least 1 byte for such empty objects.
 
   Now let’s see how these functions are invoked in Assembly.
