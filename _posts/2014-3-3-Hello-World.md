@@ -204,12 +204,15 @@ __fu1__ZTVN10__cxxabiv117__class_type_infoE in section .rdata
 ```
 
 `*(void**) base` is equivalent to dereferencing the vptr.
+
 *rax* now holds the address **0x7ff67eb745a0**.
 
 `add	rax, 16`
+  
   Since the function ptr offset in the table is already known at compile time, the instruction simply offsets the address 16 bytes to **0x7ff67eb745b0**. Things will be more complicated when it comes to multiple inheritance with the use of offset to top field.
 
 `mov	rdx, QWORD PTR [rax]`
+
 The function pointer is now loaded inside the *rdx* register.
 ```
 	mov	rax, QWORD PTR -16[rbp]	 # tmp131, derived
@@ -218,6 +221,7 @@ The function pointer is now loaded inside the *rdx* register.
 The next 2 move instructions are the same as non-virtual ones. They prepare an object pointer (*this*) as the first argument for next call instruction.
 
 `call	rdx`
+
 And finally, the function is invoked via an indirect call through an address stored inside *rdx*, resolving the correct override. 
 
 Quite a lengthy one, right? With the presence of virtual functions, another level of indirection is introduced and can only be resolved at runtime. 
