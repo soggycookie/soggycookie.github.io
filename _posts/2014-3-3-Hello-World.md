@@ -3,7 +3,7 @@ layout: post
 title: A quest to understand how virtual work in c++
 ---
 
-  After reading some other authors' articles about how vtable and inheritance works, I found out I understand nothing. So I took this matter into my own hands, and I also thought that this is a good chance to learn more about other tools than Visual Studio toolchain. ==Mingw64== toolchain was selected to get myself used to cmd tool.
+  After reading some other authors' articles about how vtable and inheritance works, I found out I understand nothing. So I took this matter into my own hands, and I also thought that this is a good chance to learn more about other tools than Visual Studio toolchain. *Mingw64* toolchain was selected to get myself used to cmd tool.
 
 ## **Case 1:** No inheritance
 
@@ -76,11 +76,11 @@ Derived
 	call	_ZN7Derived3FooEv	 #
 ```
 
-  The first two mov instructions load the object pointer (==this==) from the stack frame and place it into ==rcx== register, which is the first argument register according to the Windows x64 calling convention.
+  The first two mov instructions load the object pointer (*this*) from the stack frame and place it into *rcx* register, which is the first argument register according to the Windows x64 calling convention.
 
-  The call instructions directly invoke functions whose targets are known at compile time and resolved at link time, resulting in direct (non-virtual) calls to **Base::Foo()** and **Derived::Foo()**. No vtable lookup or indirect jump is involved (See later).
+  The call instructions directly invoke functions whose targets are known at compile time and resolved at link time, resulting in direct (non-virtual) calls to *Base::Foo()* and *Derived::Foo()*. No vtable lookup or indirect jump is involved (See later).
 
-  One more cool thing is how we fetch local variables from the stack. Local variables are accessed via negative offsets from the frame pointer (==rbp==), such as -8 and -16, which reflects the fact that the x64 stack grows toward lower memory addresses (from higher to lower addresses).
+  One more cool thing is how we fetch local variables from the stack. Local variables are accessed via negative offsets from the frame pointer (*rbp*), such as -8 and -16, which reflects the fact that the x64 stack grows toward lower memory addresses (from higher to lower addresses).
 
 ## **Case 2:** Simple inheritance
 
@@ -169,7 +169,7 @@ Let’s examine the generated assembly for a virtual call:
 ```
 
 That’s a whole lot more instructions!
-Let’s dissect them one by one with the use of **GDB**.
+Let’s dissect them one by one with the use of *GDB*.
 
 `mov rax, QWORD PTR -8[rbp]`
 This loads the address of the object (base) from the stack.
@@ -204,21 +204,21 @@ __fu1__ZTVN10__cxxabiv117__class_type_infoE in section .rdata
 ```
 
 `*(void**) base` is equivalent to dereferencing the vptr.
-==rax== now holds the address **0x7ff67eb745a0**.
+*rax* now holds the address **0x7ff67eb745a0**.
 
 `add	rax, 16`
   Since the function ptr offset in the table is already known at compile time, the instruction simply offsets the address 16 bytes to **0x7ff67eb745b0**. Things will be more complicated when it comes to multiple inheritance with the use of offset to top field.
 
 `mov	rdx, QWORD PTR [rax]`
-The function pointer is now loaded inside the ==rdx== register.
+The function pointer is now loaded inside the *rdx* register.
 ```
 	mov	rax, QWORD PTR -16[rbp]	 # tmp131, derived
 	mov	rcx, rax	 #, tmp131
 ```
-The next 2 move instructions are the same as non-virtual ones. They prepare an object pointer (==this==) as the first argument for next call instruction.
+The next 2 move instructions are the same as non-virtual ones. They prepare an object pointer (*this*) as the first argument for next call instruction.
 
 `call	rdx`
-And finally, the function is invoked via an indirect call through an address stored inside ==rdx==, resolving the correct override. 
+And finally, the function is invoked via an indirect call through an address stored inside *rdx*, resolving the correct override. 
 
 Quite a lengthy one, right? With the presence of virtual functions, another level of indirection is introduced and can only be resolved at runtime. 
 
