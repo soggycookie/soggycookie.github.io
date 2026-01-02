@@ -1,18 +1,14 @@
 /* Fix double/nested scrollbars in code blocks */
-.highlight,
-figure.highlight,
-pre {
-  overflow-x: auto !important;  /* Show scrollbar only when needed */
-  overflow-y: auto !important;
+.highlight {
+  overflow: auto !important;  // Only show when needed, removes always-on vertical
 }
 
-/* Optional: Hide unnecessary vertical scrollbar if code isn't too tall */
-pre {
-  max-height: none;
+pre.highlight {
+  overflow: auto !important;  // Targets the inner pre specifically
 }
 
-/* Make long lines wrap instead of scroll (optional, cleaner on mobile) */
+// Optional: Remove horizontal scrollbar entirely by wrapping long lines (great for mobile/readability)
 pre code {
   white-space: pre-wrap !important;
-  word-wrap: break-word !important;
+  word-break: break-all !important;  // Or break-word for nicer breaks
 }
